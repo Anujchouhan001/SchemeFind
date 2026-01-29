@@ -1,5 +1,6 @@
 # Required for Web Application
 flask>=2.3.0
+gunicorn>=21.0.0
 
 # Optional dependencies for future enhancements:
 # pandas>=1.3.0          # For advanced data processing
