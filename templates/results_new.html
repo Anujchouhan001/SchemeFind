@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block title %}Eligible Schemes - Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 30px;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stats-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #28a745;
+    }
+    
+    .scheme-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-left: 5px solid #28a745;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .scheme-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .scheme-card.partial-match {
+        border-left-color: #ffc107;
+    }
+    
+    .match-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .match-badge.full {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .match-badge.partial {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .criteria-list {
+        margin: 15px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .user-summary {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .user-summary-item {
+        display: inline-block;
+        margin: 5px 10px;
+        padding: 8px 15px;
+        background: #e9ecef;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+    }
+    
+    .no-results i {
+        font-size: 5rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+    
+    .section-divider {
+        margin: 30px 0 20px 0;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+    }
+    
+    .eligibility-details {
+        font-size: 13px;
+        color: #666;
+    }
+    
+    .eligibility-details .matched {
+        color: #28a745;
+    }
+    
+    .eligibility-details .failed {
+        color: #dc3545;
+    }
+    
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-3"><i class="fas fa-clipboard-check me-3"></i>Your Eligibility Results</h1>
+                <p class="lead mb-0">Based on your responses, we've found schemes you may be eligible for</p>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-number">{{ total_found }}</div>
+                    <div class="text-muted">Matching Schemes</div>
+                    <small class="text-muted">out of {{ total_schemes }} total schemes</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <!-- User Summary -->
+    <div class="user-summary">
+        <h5 class="mb-3"><i class="fas fa-user me-2"></i>Your Profile Summary</h5>
+        {% if user.state %}
+        <span class="user-summary-item"><i class="fas fa-map-marker-alt me-1"></i>{{ user.state }}</span>
+        {% endif %}
+        {% if user.age %}
+        <span class="user-summary-item"><i class="fas fa-birthday-cake me-1"></i>Age: {{ user.age }}</span>
+        {% endif %}
+        {% if user.gender %}
+        <span class="user-summary-item"><i class="fas fa-venus-mars me-1"></i>{{ user.gender }}</span>
+        {% endif %}
+        {% if user.category %}
+        <span class="user-summary-item"><i class="fas fa-users me-1"></i>{{ user.category }}</span>
+        {% endif %}
+        {% if user.occupation %}
+        <span class="user-summary-item"><i class="fas fa-briefcase me-1"></i>{{ user.occupation }}</span>
+        {% endif %}
+        {% if user.annual_income %}
+        <span class="user-summary-item"><i class="fas fa-rupee-sign me-1"></i>₹{{ user.annual_income|int }}/year</span>
+        {% endif %}
+        {% if user.is_bpl %}
+        <span class="user-summary-item bg-warning text-dark"><i class="fas fa-certificate me-1"></i>BPL</span>
+        {% endif %}
+    </div>
+    
+    {% if schemes %}
+    <!-- Results List -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4><i class="fas fa-list me-2"></i>Eligible Schemes ({{ total_found }})</h4>
+        <a href="/find-schemes" class="btn btn-outline-primary">
+            <i class="fas fa-redo me-1"></i>Search Again
+        </a>
+    </div>
+    
+    {% if fully_eligible %}
+    <div class="section-divider">
+        <h5 class="text-success"><i class="fas fa-check-circle me-2"></i>Fully Eligible Schemes ({{ fully_eligible|length }})</h5>
+    </div>
+    
+    {% for scheme in fully_eligible %}
+    <div class="scheme-card">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h5 class="mb-1">{{ scheme.name }}</h5>
+                <span class="match-badge full">
+                    <i class="fas fa-check-circle me-1"></i>100% Eligible
+                </span>
+            </div>
+        </div>
+        
+        <div class="criteria-list">
+            <small class="text-muted mb-2 d-block">
+                <i class="fas fa-check-double me-1"></i>
+                Matched {{ scheme.matched_criteria }} of {{ scheme.total_criteria }} eligibility criteria
+            </small>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+            </div>
+        </div>
+        
+        {% if scheme.eligibility_criteria %}
+        <div class="eligibility-details mt-3">
+            <strong>Eligibility Criteria:</strong>
+            <ul class="mb-0 mt-1">
+                {% for criteria in scheme.eligibility_criteria[:5] %}
+                <li class="matched"><i class="fas fa-check me-1"></i>{{ criteria.eligibility_text }}</li>
+                {% endfor %}
+                {% if scheme.eligibility_criteria|length > 5 %}
+                <li class="text-muted">...and {{ scheme.eligibility_criteria|length - 5 }} more criteria</li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+    {% if partial_matches %}
+    <div class="section-divider">
+        <h5 class="text-warning"><i class="fas fa-exclamation-circle me-2"></i>Partial Matches ({{ partial_matches|length }})</h5>
+        <small class="text-muted">These schemes match some of your criteria. Check the requirements carefully.</small>
+    </div>
+    
+    {% for scheme in partial_matches %}
+    <div class="scheme-card partial-match">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h5 class="mb-1">{{ scheme.name }}</h5>
+                <span class="match-badge partial">
+                    <i class="fas fa-check me-1"></i>{{ scheme.match_percentage|round|int }}% Match
+                </span>
+            </div>
+        </div>
+        
+        <div class="criteria-list">
+            <small class="text-muted mb-2 d-block">
+                <i class="fas fa-check-double me-1"></i>
+                Matched {{ scheme.matched_criteria }} of {{ scheme.total_criteria }} eligibility criteria
+            </small>
+            <div class="progress">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ scheme.match_percentage }}%"></div>
+            </div>
+        </div>
+        
+        {% if scheme.failed_criteria %}
+        <div class="eligibility-details mt-3">
+            <strong class="text-danger">Missing Criteria:</strong>
+            <ul class="mb-0 mt-1">
+                {% for criteria in scheme.failed_criteria[:3] %}
+                <li class="failed"><i class="fas fa-times me-1"></i>{{ criteria }}</li>
+                {% endfor %}
+                {% if scheme.failed_criteria|length > 3 %}
+                <li class="text-muted">...and {{ scheme.failed_criteria|length - 3 }} more</li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+    {% else %}
+    <!-- No Results -->
+    <div class="no-results">
+        <i class="fas fa-search"></i>
+        <h4>No Matches Found</h4>
+        <p class="text-muted">
+            Based on your responses, we couldn't find schemes that match your eligibility criteria.<br>
+            This doesn't mean you're not eligible - try answering more questions or adjust your responses.
+        </p>
+        <div class="mt-4">
+            <a href="/find-schemes" class="btn btn-primary me-2">
+                <i class="fas fa-redo me-1"></i>Try Again
+            </a>
+            <a href="/all-schemes" class="btn btn-outline-secondary">
+                <i class="fas fa-list me-1"></i>Browse All Schemes
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Additional Actions -->
+    <div class="text-center mt-5">
+        <div class="card bg-light border-0">
+            <div class="card-body py-4">
+                <h5>Need Help?</h5>
+                <p class="text-muted mb-3">
+                    Contact your local government office or visit the official Bihar government portal for more information.
+                </p>
+                <a href="https://state.bihar.gov.in/" target="_blank" class="btn btn-outline-primary">
+                    <i class="fas fa-external-link-alt me-1"></i>Bihar Government Portal
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
