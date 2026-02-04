@@ -1,30 +1,26 @@
-# Government Scheme Finder 🎯
+# 🏛️ SchemePy - Bihar Government Scheme Finder
 
-A Python-based intelligent application to help citizens of Bihar find government schemes they are eligible for based on their personal, professional, and financial profile.
-
-## 📋 Project Overview
-
-The **Scheme Finder** is a comprehensive tool designed for college projects that demonstrates:
-- Object-Oriented Programming (OOP) principles
-- CSV data processing
-- Advanced matching algorithms (Exact Match, Range Match, Keyword Match)
-- Interactive CLI development
-- Modular project structure
+A smart, section-based questionnaire system that matches users with 100% eligible government schemes in Bihar. Built with Flask and featuring conditional logic, responsive UI, and comprehensive scheme database.
 
 ## 🌟 Features
 
-### Core Functionality
-- ✅ **Intelligent Matching Engine**: Uses exact match, range match, and keyword-based matching
-- ✅ **Interactive Questionnaire**: Collects user information through a user-friendly CLI
-- ✅ **Smart Scoring System**: Ranks schemes from 0-100 based on eligibility fit
-- ✅ **Detailed Reports**: Generates comprehensive reports with scheme details
-- ✅ **Multi-Mode Support**: Full mode and Quick mode for different use cases
+### 🎯 **Section-based Smart Questionnaire**
+- **10 Conditional Sections (A-J)**: Questions unlock based on previous responses
+- **Smart Flow Logic**: Only relevant sections are shown based on user profile
+- **Professional UI**: Clean, responsive design with progress tracking
+- **Session-free Architecture**: Reliable questionnaire management without session issues
 
-### Matching Algorithms
+### 🔍 **100% Eligible Scheme Matching**
+- **Precise Matching**: Shows only schemes where user meets ALL criteria
+- **2,632+ Government Schemes**: Complete Bihar government scheme database
+- **Smart Parsing**: Automatically extracts age ranges, land requirements, income limits
+- **Detailed Eligibility**: Shows specific reasons why user qualifies
 
-1. **Exact Match**: Gender, Category, State
-2. **Range Match**: Age (18-50), Income (< ₹60,000)
-3. **Keyword Match**: Occupation keywords (Farmer → Kisan, Krishi schemes)
+### 💻 **Technical Excellence**
+- **Flask Web Framework**: Production-ready Python web application
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Error-free Flow**: Fixed session serialization and redirect loop issues
+- **Clean Architecture**: Modular design with separate concerns
 
 ## 📁 Project Structure
 
