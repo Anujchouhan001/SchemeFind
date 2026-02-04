@@ -97,16 +97,22 @@ def results():
     # Find only 100% eligible schemes
     eligible_schemes = q.find_eligible_schemes(only_fully_eligible=True)
     
-    # Prepare user summary for display
-    user_summary = {
-        "state": "Bihar" if q.user_response.state_bihar else "Other",
-        "age": q.user_response.age,
-        "gender": q.user_response.gender,
-        "category": q.user_response.category,
-        "occupation": q.user_response.occupation,
-        "annual_income": q.user_response.annual_income,
-        "is_bpl": q.user_response.is_bpl
-    }
+    # Prepare user summary for display - filter out None values
+    user_summary = {}
+    if q.user_response.state_bihar is not None:
+        user_summary["state"] = "Bihar" if q.user_response.state_bihar else "Other"
+    if q.user_response.age is not None:
+        user_summary["age"] = q.user_response.age
+    if q.user_response.gender is not None:
+        user_summary["gender"] = q.user_response.gender
+    if q.user_response.category is not None:
+        user_summary["category"] = q.user_response.category
+    if q.user_response.occupation is not None:
+        user_summary["occupation"] = q.user_response.occupation
+    if q.user_response.annual_income is not None:
+        user_summary["annual_income"] = q.user_response.annual_income
+    if q.user_response.is_bpl is not None:
+        user_summary["is_bpl"] = q.user_response.is_bpl
     
     return render_template('results_new.html', 
                          schemes=eligible_schemes, 
